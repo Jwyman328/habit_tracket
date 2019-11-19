@@ -15,13 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework_jwt.views import obtain_jwt_token
-from habits.views import sign_up_user #change this to its own view?
 
+from . import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('habits/', include('habits.urls')),
-    path('sign_in', obtain_jwt_token, name='login'),
-    path('sign_up', sign_up_user.as_view(), name='sign_up'),
+    path('<int:id>/', views.individual_habit_view.as_view(), name='individual_habit'),
+    path('<int:id>/activities/', views.individual_habit_activity_list.as_view(), name='individual_habit_activity_list'),
+    path('activity/<int:id>/', views.individual_activity.as_view(), name='individual_activity'),
+    path('create_habit', views.create_habit.as_view(), name='create_habit' ),
+    path('create_activity', views.create_activity.as_view(), name='create_activity')
+
 ]
