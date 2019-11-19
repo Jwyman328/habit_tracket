@@ -23,10 +23,12 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-habit_tracker_app-jduR7PFK/*.
-.vscode/*.
-../.vscode/
+*..habit_tracker_app-jduR7PFK/*.*
+*.vscode/*.*
+*../.vscode/
+*.Pipfile*.*
 MANIFEST
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
