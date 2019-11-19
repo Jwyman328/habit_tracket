@@ -24,6 +24,7 @@ class create_habit(APIView):
         user = request.user
         data = request.data
         data['user'] = user
+        data['completed'] = False
         newHabit = Habit.objects.create(**data)
         newHabit.save()
 

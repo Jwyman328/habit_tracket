@@ -55,7 +55,6 @@ class habit_test(TestBase):
         self.assertEqual(newHabit.user, newUser )
 
 
-
 class Test_activity(TestBase):
 
     def test_activity_get(self):
