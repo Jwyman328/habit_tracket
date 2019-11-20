@@ -24,6 +24,6 @@ urlpatterns = [
     path('<int:id>/activities/', views.individual_habit_activity_list.as_view(), name='individual_habit_activity_list'),
     path('activity/<int:id>/', views.individual_activity.as_view(), name='individual_activity'),
     path('create_habit', views.create_habit.as_view(), name='create_habit' ),
-    path('create_activity', views.create_activity.as_view(), name='create_activity')
-
+    path('create_activity', views.create_activity.as_view(), name='create_activity'),
+    path('<int:year>/<int:month>/<int:day>/',views.all_habits_for_specific_date.as_view(), name='all_habits_for_specific_date' ),
 ]

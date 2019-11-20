@@ -5,7 +5,10 @@ from .models import Habit, activity
 
 from django.contrib.auth.models import User
 
-
+class regular_Habit_serializer(serializers.ModelSerializer):
+    class Meta:
+        model = Habit 
+        fields = "__all__"
 
 class Habit_serializer(serializers.ModelSerializer):
 

@@ -54,6 +54,14 @@ class habit_test(TestBase):
         self.assertEqual(newHabit.completed, False )
         self.assertEqual(newHabit.user, newUser )
 
+    def test_get_all_habits_for_date(self):
+        newHabit = self.create_habit() # date of habit is datetime.date(2018,3,28), end_date=datetime.date(2018,3,28)
+        # need to get any habit that a specific date falls in between 
+        client = Client()
+        client.login(username='testtest', password='password')
+
+        response = client.get(reverse('all_habits_for_specific_date', kwargs={'year': 2018,'month':3,'day':28}))
+        self.assertEqual(response.status_code, 200)
 
 class Test_activity(TestBase):
 

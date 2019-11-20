@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from .models import Habit, activity
-from .serializers import Habit_serializer, activity_serializer, sign_up_serializer
+from .serializers import Habit_serializer, activity_serializer, sign_up_serializer, regular_Habit_serializer
 
 # Create your views here.
 from rest_framework.views import APIView
@@ -79,18 +79,27 @@ class individual_habit_date_activity_view(APIView):
         ## get all activities for this habit that are on this day
         ## so not less than this day, or greaterthan or equal to a day after 
         date_past = datetime.datetime(year,month,day + 1) 
-        
         this_habit = Habit.objects.get(id=habit_id)
         all_activities_for_habit = activity.objects.filter(habit=this_habit).filter(start_time__gte = date_wanted)
         all_activities_for_habit  = all_activities_for_habit.filter(start_time__lt = date_past)
+
         serialized_activities = activity_serializer(all_activities_for_habit, many=True)
         return Response(serialized_activities.data, status.HTTP_200_OK)
 
+class all_habits_for_specific_date(APIView):
+
+    def get(self,request,year,month,day):
+        # query just the users habits, then based off of date 
+        # create a date 
+        date_wanted = datetime.datetime(year,month,day)
+        userHabits = Habit.objects.filter(user=request.user).filter(start_date__gte=date_wanted).filter(end_date__lte = date_wanted)
+        serialized_data = regular_Habit_serializer(userHabits, many=True)
+        return Response(serialized_data.data, status.HTTP_200_OK )
 
 class update_activity_end_time(APIView):
 
     def put(self,request,activity_id, year,month,day,hr,minute):
-       
+        
         end_time = datetime.datetime(year,month,day,hr,minute)
         this_activity = activity.objects.get(id=activity_id)
         this_activity.end_time = end_time
