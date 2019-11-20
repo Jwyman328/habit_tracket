@@ -10,6 +10,8 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny
 
+import datetime
+
 class individual_habit_view(APIView):
 
     def get(self, request, id):
@@ -68,6 +70,32 @@ class individual_habit_activity_list(APIView):
         all_activities_for_habit = activity.objects.filter(habit=this_habit)
         serialized_activities = activity_serializer(all_activities_for_habit, many=True)
         return Response(serialized_activities.data, status.HTTP_200_OK)
+
+class individual_habit_date_activity_view(APIView):
+    """return all activities for specified habit of specified date """
+    def get(self,request, habit_id, year, month, day):
+        ## make a datetime date with year month day 
+        date_wanted = datetime.datetime(year,month,day)
+        ## get all activities for this habit that are on this day
+        ## so not less than this day, or greaterthan or equal to a day after 
+        date_past = datetime.datetime(year,month,day + 1) 
+        
+        this_habit = Habit.objects.get(id=habit_id)
+        all_activities_for_habit = activity.objects.filter(habit=this_habit).filter(start_time__gte = date_wanted)
+        all_activities_for_habit  = all_activities_for_habit.filter(start_time__lt = date_past)
+        serialized_activities = activity_serializer(all_activities_for_habit, many=True)
+        return Response(serialized_activities.data, status.HTTP_200_OK)
+
+
+class update_activity_end_time(APIView):
+
+    def put(self,request,activity_id, year,month,day,hr,minute):
+       
+        end_time = datetime.datetime(year,month,day,hr,minute)
+        this_activity = activity.objects.get(id=activity_id)
+        this_activity.end_time = end_time
+        this_activity.save()
+        return Response('activity updated',status.HTTP_200_OK )
 
         
 class sign_up_user(APIView):

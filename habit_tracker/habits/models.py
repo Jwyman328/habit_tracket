@@ -16,8 +16,8 @@ class Habit(models.Model):
 class activity(models.Model):
     habit = models.ForeignKey(Habit, on_delete=models.CASCADE)
     start_time = models.DateTimeField()
-    end_time = models.DateTimeField()
-    total_time = models.FloatField(default = 0)
+    end_time = models.DateTimeField(null=True, blank=True)
+    total_time = models.FloatField(null=True, blank=True)
 
     def create_total_time(self):
         self.total_time = self.end_time - self.start_time 

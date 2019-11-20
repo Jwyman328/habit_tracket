@@ -105,6 +105,24 @@ class Test_activity(TestBase):
 
         response = client.get(reverse('individual_habit_activity_list', kwargs={'id': 1}))
         self.assertEqual(response.status_code, 200)
+
+    def test_today_habit_activies_query_return(self):
+        self.create_activity()
+        client = Client()
+        client.login(username='testtest', password='password')
+        
+        date = datetime.date(2018,11,18)
+        response = client.get(reverse('individual_habit_date_activity', kwargs={'habit_id': 1, 'year': 2018,'month':3,'day':28}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_update_activity_stop_time_put_request(self):
+        self.create_activity()
+        client = Client()
+        client.login(username='testtest', password='password')
+
+        response = client.put(reverse('update_activity_end_time', kwargs={'activity_id':1,'year': 2018,'month':3,'day':28, 'hr':13, 'minute':25}))
+        self.assertEqual(response.status_code, 200)
+
         
 class Auth_test(TestBase):
 
@@ -133,5 +151,6 @@ class Auth_test(TestBase):
         new_user_query_set = User.objects.all()
         self.assertEqual(len( new_user_query_set), 1)
         self.assertEqual(new_user_query_set[0].username, 'testtest')
+
 
 
