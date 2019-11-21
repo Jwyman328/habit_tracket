@@ -10,6 +10,9 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny
 
+from django.utils import timezone
+import pytz
+
 import datetime
 
 class individual_habit_view(APIView):
@@ -92,15 +95,16 @@ class all_habits_for_specific_date(APIView):
         # query just the users habits, then based off of date 
         # create a date 
         date_wanted = datetime.datetime(year,month,day)
-        userHabits = Habit.objects.filter(user=request.user).filter(start_date__gte=date_wanted).filter(end_date__lte = date_wanted)
+        userHabits = Habit.objects.filter(user=request.user).filter(start_date__lte=date_wanted).filter(end_date__gte = date_wanted)
         serialized_data = regular_Habit_serializer(userHabits, many=True)
         return Response(serialized_data.data, status.HTTP_200_OK )
 
 class update_activity_end_time(APIView):
 
-    def put(self,request,activity_id, year,month,day,hr,minute):
+    def put(self,request,activity_id, year,month,day,hr,minute,sec):
         
-        end_time = datetime.datetime(year,month,day,hr,minute)
+        
+        end_time = datetime.datetime(year,month,day,hr,minute,sec)
         this_activity = activity.objects.get(id=activity_id)
         this_activity.end_time = end_time
         this_activity.save()

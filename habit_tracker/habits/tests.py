@@ -128,7 +128,7 @@ class Test_activity(TestBase):
         client = Client()
         client.login(username='testtest', password='password')
 
-        response = client.put(reverse('update_activity_end_time', kwargs={'activity_id':1,'year': 2018,'month':3,'day':28, 'hr':13, 'minute':25}))
+        response = client.put(reverse('update_activity_end_time', kwargs={'activity_id':1,'year': 2018,'month':3,'day':28, 'hr':13, 'minute':25,'sec':25}))
         self.assertEqual(response.status_code, 200)
 
         
