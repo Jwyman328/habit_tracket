@@ -12,6 +12,7 @@ from rest_framework.permissions import AllowAny
 
 from django.utils import timezone
 import pytz
+from pytz import timezone
 
 import datetime
 
@@ -51,13 +52,15 @@ class create_activity(APIView):
     def post(self, request):
         # current format of data sent = {'habit_id':newHabit.id,'start_time': datetime.datetime.now(), 'end_time': datetime.datetime.now(), 'total_time':0}
         data = request.data 
-        id_num = data['habit_id']
-        print(id_num)
-       
+        id_num = data['habit_id']       
         habit_object = Habit.objects.get(id = id_num) 
         del data['habit_id']
         data['habit'] = habit_object
-        print(data)
+       
+        eastern = timezone('US/Eastern')
+        newDate = datetime.datetime.now()
+        newDate = eastern.localize(newDate)
+        data['start_time'] = newDate
         newActivity = activity.objects.create(**data)
         newActivity.save()
         if (newActivity):
@@ -102,11 +105,18 @@ class all_habits_for_specific_date(APIView):
 class update_activity_end_time(APIView):
 
     def put(self,request,activity_id, year,month,day,hr,minute,sec):
-        
-        
+
+        eastern = timezone('US/Eastern')
         end_time = datetime.datetime(year,month,day,hr,minute,sec)
+
+        end_time = eastern.localize(end_time)
         this_activity = activity.objects.get(id=activity_id)
         this_activity.end_time = end_time
+
+        #also set the total time as the differnece of the start time and end time 
+        total_time = this_activity.start_time - end_time  
+        print( total_time)
+        this_activity.total_time = total_time
         this_activity.save()
         return Response('activity updated',status.HTTP_200_OK )
 
