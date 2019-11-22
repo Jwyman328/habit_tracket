@@ -67,7 +67,11 @@ class Test_activity(TestBase):
 
     def test_activity_get(self):
         newHabit = self.create_habit()
-        newActivity = activity.objects.create(habit=newHabit, start_time=datetime.datetime.now(), end_time=datetime.datetime.now(), total_time=0)
+        # subtract times to get total_time 
+        start_time = datetime.datetime.now()
+        end_time = datetime.datetime.now()
+        total_time = end_time - start_time 
+        newActivity = activity.objects.create(habit=newHabit, start_time=start_time, end_time=end_time, total_time=total_time)
 
         client = Client()
         client.login(username='testtest', password='password')
@@ -83,7 +87,7 @@ class Test_activity(TestBase):
         client.login(username='testtest', password='password')
 
         #create a habit 
-        response = client.post(reverse('create_activity'), data=json.dumps({'habit_id':newHabit.id,'start_time': datetime.datetime.now(), 'end_time': datetime.datetime.now(), 'total_time':0},cls= DjangoJSONEncoder ),
+        response = client.post(reverse('create_activity'), data=json.dumps({'habit_id':newHabit.id,'start_time': datetime.datetime.now(), 'end_time': datetime.datetime.now(), 'total_time':None},cls= DjangoJSONEncoder ),
              content_type="application/json")
         self.assertEqual(response.status_code, 201)
 
@@ -97,7 +101,7 @@ class Test_activity(TestBase):
         end_time = datetime.datetime(2019, 11, 18, 22, 45, 56, 43000)
 
         #create a habit 
-        response = client.post(reverse('create_activity'), data=json.dumps({'habit_id':newHabit.id,'start_time': start_time , 'end_time':end_time, 'total_time':0},cls= DjangoJSONEncoder ),
+        response = client.post(reverse('create_activity'), data=json.dumps({'habit_id':newHabit.id,'start_time': start_time , 'end_time':end_time, 'total_time':None},cls= DjangoJSONEncoder ),
              content_type="application/json")
 
         newActivity = activity.objects.get(id=1)
@@ -130,6 +134,12 @@ class Test_activity(TestBase):
 
         response = client.put(reverse('update_activity_end_time', kwargs={'activity_id':1,'year': 2018,'month':3,'day':28, 'hr':13, 'minute':25,'sec':25}))
         self.assertEqual(response.status_code, 200)
+
+    def test_habit_activity_count_increments(self):
+        """when an activity is made, that habit should increment the amount of times it has been done """
+        self.create_activity()
+        habit = Habit.objects.get(id=1)
+        self.assertEqual(habit.current_times_activity_done,1)
 
         
 class Auth_test(TestBase):

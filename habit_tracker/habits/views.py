@@ -114,7 +114,7 @@ class update_activity_end_time(APIView):
         this_activity.end_time = end_time
 
         #also set the total time as the differnece of the start time and end time 
-        total_time = this_activity.start_time - end_time  
+        total_time = end_time  - this_activity.start_time 
         print( total_time)
         this_activity.total_time = total_time
         this_activity.save()
