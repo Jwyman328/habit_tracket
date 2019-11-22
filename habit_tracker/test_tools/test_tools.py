@@ -29,6 +29,6 @@ class TestBase(TestCase):
         newHabit = self.create_habit()
         start_time = datetime.datetime(2019, 11, 18, 22, 44, 56, 43000)
         end_time = datetime.datetime(2019, 11, 18, 22, 45, 56, 43000)
-
-        newActivity = activity.objects.create(habit=newHabit, start_time = start_time, end_time=end_time)
+        total_time = end_time - start_time
+        newActivity = activity.objects.create(habit=newHabit, start_time = start_time, end_time=end_time, total_time=total_time)
         newActivity.save()

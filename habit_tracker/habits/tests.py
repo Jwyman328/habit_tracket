@@ -87,7 +87,7 @@ class Test_activity(TestBase):
         client.login(username='testtest', password='password')
 
         #create a habit 
-        response = client.post(reverse('create_activity'), data=json.dumps({'habit_id':newHabit.id,'start_time': datetime.datetime.now(), 'end_time': datetime.datetime.now(), 'total_time':None},cls= DjangoJSONEncoder ),
+        response = client.post(reverse('create_activity'), data=json.dumps({'habit_id':newHabit.id,'start_time': datetime.datetime.now(), 'end_time': datetime.datetime.now()},cls= DjangoJSONEncoder ),
              content_type="application/json")
         self.assertEqual(response.status_code, 201)
 
@@ -101,7 +101,7 @@ class Test_activity(TestBase):
         end_time = datetime.datetime(2019, 11, 18, 22, 45, 56, 43000)
 
         #create a habit 
-        response = client.post(reverse('create_activity'), data=json.dumps({'habit_id':newHabit.id,'start_time': start_time , 'end_time':end_time, 'total_time':None},cls= DjangoJSONEncoder ),
+        response = client.post(reverse('create_activity'), data=json.dumps({'habit_id':newHabit.id,'start_time': start_time , 'end_time':end_time},cls= DjangoJSONEncoder ),
              content_type="application/json")
 
         newActivity = activity.objects.get(id=1)
@@ -140,6 +140,12 @@ class Test_activity(TestBase):
         self.create_activity()
         habit = Habit.objects.get(id=1)
         self.assertEqual(habit.current_times_activity_done,1)
+
+    def test_habit_amount_time_accumulated_increments(self):
+        """when a timed habit creates an activity the total habit time should be incremented by the"""
+        self.create_activity()
+        habit = Habit.objects.get(id=1)
+        self.assertTrue(habit.current_completed_timed_amount != 0)
 
         
 class Auth_test(TestBase):
