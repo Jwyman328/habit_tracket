@@ -19,6 +19,7 @@ from django.urls import path, include
 from . import views
 urlpatterns = [
     path('<int:id>/', views.individual_habit_view.as_view(), name='individual_habit'),
+    path('<int:habit_id>/<int:year>/<int:month>/<int:day>',views.habit_total_acumulated_for_specific_date.as_view(),name = 'habit_total_acumulated_for_specific_date'),
     path('<int:habit_id>/activities/<int:year>/<int:month>/<int:day>/', views.individual_habit_date_activity_view.as_view(), name='individual_habit_date_activity'),
     path('activities/update/<int:activity_id>/<int:year>/<int:month>/<int:day>/<int:hr>/<int:minute>/<int:sec>/', views.update_activity_end_time.as_view(), name='update_activity_end_time'),
     path('<int:id>/activities/', views.individual_habit_activity_list.as_view(), name='individual_habit_activity_list'),

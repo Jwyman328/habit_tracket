@@ -24,6 +24,13 @@ class TestBase(TestCase):
             type_of_habit='timed', title='test', goal_amount=5, completed=False, user=newUser)
 
         return newHabit
+        
+    def create_checked_habit(self):
+        newUser = self.create_user()
+        newHabit = Habit.objects.create(start_date=datetime.date(2018,3,28), end_date=datetime.date(2018,3,28),
+            type_of_habit='checked', title='test', goal_amount=1, completed=False, user=newUser)
+
+        return newHabit
     
     def create_activity(self):
         newHabit = self.create_habit()
@@ -32,3 +39,12 @@ class TestBase(TestCase):
         total_time = end_time - start_time
         newActivity = activity.objects.create(habit=newHabit, start_time = start_time, end_time=end_time, total_time=total_time)
         newActivity.save()
+
+    def create_activity__pass_checked_habit(self):
+        newHabit = self.create_checked_habit()
+        start_time = datetime.datetime(2018, 3, 28, 22, 44, 56, 43000)
+        end_time = datetime.datetime(2018, 3, 28, 23, 45, 56, 43000)
+        total_time = end_time - start_time
+        newActivity = activity.objects.create(habit=newHabit, start_time = start_time, end_time=end_time, total_time=total_time)
+        newActivity.save()
+

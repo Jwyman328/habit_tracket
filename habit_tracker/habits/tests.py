@@ -63,6 +63,21 @@ class habit_test(TestBase):
         response = client.get(reverse('all_habits_for_specific_date', kwargs={'year': 2018,'month':3,'day':28}))
         self.assertEqual(response.status_code, 200)
 
+    def test_habit_amount_total_for_date(self):
+        self.create_activity()
+        client = Client()
+        client.login(username='testtest', password='password')
+
+        response = client.get(reverse('habit_total_acumulated_for_specific_date', kwargs={'habit_id':1,'year': 2018,'month':3,'day':28}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_habit_completed_turns_to_completed_when_true(self):
+        self.create_activity__pass_checked_habit()
+        habit = Habit.objects.get(id=1)
+        self.assertTrue(habit.completed)
+
+
+
 class Test_activity(TestBase):
 
     def test_activity_get(self):

@@ -15,6 +15,7 @@ import pytz
 from pytz import timezone
 
 import datetime
+import json
 
 class individual_habit_view(APIView):
 
@@ -102,6 +103,35 @@ class all_habits_for_specific_date(APIView):
         serialized_data = regular_Habit_serializer(userHabits, many=True)
         return Response(serialized_data.data, status.HTTP_200_OK )
 
+class habit_total_acumulated_for_specific_date(APIView):
+
+    def get(self, request, habit_id, year, month, day):
+        # get habit, then query activities for this date 
+                ## make a datetime date with year month day 
+        date_wanted = datetime.datetime(year,month,day)
+        ## get all activities for this habit that are on this day
+        ## so not less than this day, or greaterthan or equal to a day after 
+        date_past = datetime.datetime(year,month,day + 1) 
+        this_habit = Habit.objects.get(id=habit_id)
+        all_activities_for_habit = activity.objects.filter(habit=this_habit).filter(start_time__gte = date_wanted)
+        all_activities_for_habit  = all_activities_for_habit.filter(start_time__lt = date_past)
+        ## now add up the total accumulated time and accumulated count 
+
+        accumulated_data = {'accumulated_time':datetime.timedelta(0), 'accumulated_count':0}
+        for activity_of_date in all_activities_for_habit:
+            if activity_of_date.total_time:
+                accumulated_data['accumulated_time'] += activity_of_date.total_time
+            else:
+                pass
+            accumulated_data['accumulated_count'] += 1  
+        #no serializer for this data, manually convert it to json 
+        # turn delta time to string, json wont accept delta datetime
+        accumulated_data['accumulated_time'] = str(accumulated_data['accumulated_time'] )
+        jsonString = json.dumps(accumulated_data)
+        jsonData = json.loads( jsonString)
+        return Response(jsonData,status.HTTP_200_OK )
+
+
 class update_activity_end_time(APIView):
 
     def put(self,request,activity_id, year,month,day,hr,minute,sec):
@@ -115,7 +145,6 @@ class update_activity_end_time(APIView):
 
         #also set the total time as the differnece of the start time and end time 
         total_time = end_time  - this_activity.start_time 
-        print( total_time)
         this_activity.total_time = total_time
         this_activity.save()
         return Response('activity updated',status.HTTP_200_OK )

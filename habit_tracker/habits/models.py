@@ -1,6 +1,8 @@
 from django.db import models
 
 from django.contrib.auth.models import User
+
+import datetime
 # Create your models here.
 
 class Habit(models.Model):
@@ -10,11 +12,31 @@ class Habit(models.Model):
     title = models.CharField(max_length=100)
     type_of_goal = models.CharField(default='total', max_length=50) #goal can be daily goal or total goal
     goal_amount = models.PositiveIntegerField()
-    current_completed_timed_amount = models.DurationField(null=True, blank=True)
+    current_completed_timed_amount = models.DurationField(default=datetime.timedelta(0),null=True, blank=True)
     current_times_activity_done = models.IntegerField(default=0, null=True, blank=True)
 
     completed = models.BooleanField()
     user = models.ForeignKey(User, on_delete = models.CASCADE)
+
+    def check_completed(self):
+        if self.type_of_habit == 'checked':
+            if self.current_times_activity_done >= self.goal_amount:
+                self.completed = True
+            else:
+                self.completed = False
+        else:
+            goal_amount_in_hours = datetime.timedelta(hours=self.goal_amount)
+            if self.current_completed_timed_amount >= goal_amount_in_hours:
+                 self.completed = True
+            else:
+                self.completed = False
+
+    def save(self, *args, **kwargs):
+        self.check_completed()
+        super(Habit,self).save( *args, **kwargs)
+
+
+
 
 
 class activity(models.Model):
