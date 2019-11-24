@@ -16,9 +16,6 @@ class Habit(models.Model):
     current_times_activity_done = models.IntegerField(default=0, null=True, blank=True)
     completed = models.BooleanField()
     user = models.ForeignKey(User, on_delete = models.CASCADE)
-
-    day_times_activity_done = { } #{'date':{total: num. completed:Bool},} 
-    day_total_timed_done = { } #{'date':{total: num. completed:Bool},} 
  
     def check_completed(self):
         if self.type_of_habit == 'checked':
@@ -37,28 +34,6 @@ class Habit(models.Model):
             else:
                 self.completed = False
     
-    def check_completed_for_day(self,date):
-        if self.type_of_habit == 'checked':
-            day_checked_date = self.day_times_activity_done[date]
-            if float(day_checked_date['total']) >= float(self.goal_amount):
-                day_checked_date['completed'] = True
-            else:
-                day_checked_date['completed'] = False
-        else:
-            if float(self.goal_amount) >= 1:
-                goal_amount_in_hours = datetime.timedelta(hours=float(self.goal_amount))
-            else:
-                goal_amount_in_hours = datetime.timedelta(minutes=float(self.goal_amount))
-
-            #self.day_total_timed_done[date] = {}
-            #day_timed_total_date = self.day_total_timed_done[date]
-            if 'total' in  self.day_total_timed_done[date]:
-                if self.day_total_timed_done[date]['total'] >= goal_amount_in_hours:
-                    self.day_total_timed_done[date]['completed'] = True
-                else:
-                    self.day_total_timed_done[date]['completed'] = False
-            else:
-                self.day_total_timed_done[date]['total'] = datetime.timedelta(0)
         self.save()
 
     def save(self, *args, **kwargs):
@@ -74,8 +49,6 @@ class activity(models.Model):
 
 
     def create_total_time(self):
-        print(self.start_time)
-        print(self.end_time)
         if self.end_time:
             self.total_time = self.end_time - self.start_time 
             return self.total_time
@@ -92,15 +65,6 @@ class activity(models.Model):
             self.habit.current_times_activity_done += 1
 
             ## just get the day from datetime 
-            print(self.habit.day_times_activity_done)
-            if day in self.habit.day_times_activity_done: 
-                self.habit.day_times_activity_done[day]['total'] += 1
-            else:
-                self.habit.day_times_activity_done[day] = {}
-                self.habit.day_times_activity_done[day]['total'] = 1
-                
-                self.habit.day_total_timed_done[day] = {}
-                self.habit.day_total_timed_done[day]['total'] = datetime.timedelta(0)
             #if habit is timed then add the total_time to the total_time completed
             self.habit.save()
         else:
@@ -113,18 +77,10 @@ class activity(models.Model):
                     self.habit.current_completed_timed_amount += self.total_time
 
                 # now update totals for daily 
-                if day in self.habit.day_total_timed_done:
-                    self.habit.day_total_timed_done[day]['total'] += self.total_time
-                else:
-                    self.habit.day_total_timed_done[day] = {}
-                    self.habit.day_total_timed_done[day]['total'] = self.total_time
-
                 self.habit.save()
             else:
                 pass
             
-            #if self.end_time:
-        self.habit.check_completed_for_day(day) 
         super(activity,self).save( *args, **kwargs)
 
     # when it gets saved generate the total_time field?
