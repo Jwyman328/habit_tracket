@@ -5,13 +5,6 @@ from django.contrib.auth.models import User
 import datetime
 # Create your models here.
 
-class Daily_habit_data(models.Model):
-    date = models.DateField()
-    timed_total = models.DurationField(default=datetime.timedelta(0))
-    count_total = models.PositiveIntegerField(default=0)
-    completed_timed_total = models.BooleanField(default=False)
-    completed_count_total = models.BooleanField(default=False)
-
 class Habit(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
@@ -23,16 +16,9 @@ class Habit(models.Model):
     current_times_activity_done = models.IntegerField(default=0, null=True, blank=True)
     completed = models.BooleanField()
     user = models.ForeignKey(User, on_delete = models.CASCADE)
-    specific_date_daily_data = models.ForeignKey(Daily_habit_data,on_delete =  models.CASCADE)
-     self.day_times_activity_done = { } #{'date':{total: num. completed:Bool},} 
-        self.day_total_timed_done = { } #{'date':{total: num. completed:Bool},} 
 
-    def __init__(self, *args, **kwargs):
-        super(Habit, self).__init__(*args, **kwargs)
-       
-
-   
-
+    day_times_activity_done = { } #{'date':{total: num. completed:Bool},} 
+    day_total_timed_done = { } #{'date':{total: num. completed:Bool},} 
  
     def check_completed(self):
         if self.type_of_habit == 'checked':
