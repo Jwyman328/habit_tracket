@@ -40,7 +40,7 @@ class TestBase(TestCase):
         newActivity = activity.objects.create(habit=newHabit, start_time = start_time, end_time=end_time, total_time=total_time)
         newActivity.save()
 
-    def create_activity__pass_checked_habit(self):
+    def create_activity_pass_checked_habit(self):
         newHabit = self.create_checked_habit()
         start_time = datetime.datetime(2018, 3, 28, 22, 44, 56, 43000)
         end_time = datetime.datetime(2018, 3, 28, 23, 45, 56, 43000)

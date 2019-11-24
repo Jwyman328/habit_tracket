@@ -72,9 +72,20 @@ class habit_test(TestBase):
         self.assertEqual(response.status_code, 200)
 
     def test_habit_completed_turns_to_completed_when_true(self):
-        self.create_activity__pass_checked_habit()
+        self.create_activity_pass_checked_habit()
         habit = Habit.objects.get(id=1)
         self.assertTrue(habit.completed)
+
+    def test_habit_complted_for_daily_true_status_200(self):
+        """self.create_activity_pass_checked_habit()
+
+        client = Client()
+        client.login(username='testtest', password='password')
+        client.get()"""
+
+
+
+
 
 
 
