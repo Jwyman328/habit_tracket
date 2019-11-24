@@ -197,4 +197,35 @@ class Test_daily_habit(TestBase):
         self.create_activity()
         daily_habits = Daily_Habit.objects.all()
         self.assertEqual(len(daily_habits), 1)
+
+    def test_multiple_daily_habits_created(self):
+       
+        newUser = self.create_user()
+        newHabit = Habit.objects.create(start_date="2018-3-28", end_date="2018-3-30",
+            type_of_habit='timed', title='test', goal_amount=5, completed=False, user=newUser)
+        newHabit.save()
+
+        daily_habits = Daily_Habit.objects.all()
+        self.assertEqual(len(daily_habits), 3)
+
+    def test_daily_habit_goal_checked_completed(self):
+        newUser = self.create_user()
+        newHabit = Habit.objects.create(start_date="2018-3-28", end_date="2018-3-28",type_of_goal='daily',
+            type_of_habit='checked', title='test', goal_amount=2, completed=False, user=newUser)
+        newHabit.save()
+
+        start_time = datetime.datetime(2018, 3, 28, 22, 44, 56, 43000)
+        end_time = datetime.datetime(2018, 3, 28, 22, 45, 56, 43000)
+        total_time = end_time - start_time
+        newActivity = activity.objects.create(habit=newHabit, start_time = start_time, end_time=end_time, total_time=total_time)
+        secondActivity = activity.objects.create(habit=newHabit, start_time = start_time, end_time=end_time, total_time=total_time)
+
+        newActivity.save()
+        secondActivity.save()
+
+        daily_habit = Daily_Habit.objects.get(id=1)
+        print(daily_habit.count_times_done_total)
+        self.assertTrue(daily_habit.completed)
+
+
         

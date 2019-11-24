@@ -20,14 +20,15 @@ class TestBase(TestCase):
 
     def create_habit(self):
         newUser = self.create_user()
-        newHabit = Habit.objects.create(start_date="2018-3-28", end_date="2018-3-28",
+        newHabit = Habit.objects.create(start_date="2018-3-28", end_date="2018-3-28",type_of_goal='daily',
             type_of_habit='timed', title='test', goal_amount=5, completed=False, user=newUser)
+        newHabit.save()
 
         return newHabit
         
     def create_checked_habit(self):
         newUser = self.create_user()
-        newHabit = Habit.objects.create(start_date="2018-3-28", end_date="2018-3-28",
+        newHabit = Habit.objects.create(start_date="2018-3-28", end_date="2018-3-28",type_of_goal='daily',
             type_of_habit='checked', title='test', goal_amount=1, completed=False, user=newUser)
 
         return newHabit
