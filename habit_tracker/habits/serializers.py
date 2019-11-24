@@ -12,15 +12,6 @@ class regular_Habit_serializer(serializers.ModelSerializer):
 
 class Habit_serializer(serializers.ModelSerializer):
 
-    daily_timed_goal_completed_dict = serializers.SerializerMethodField()
-    daily_checked_goal_completed_dict = serializers.SerializerMethodField()
-
-    def get_daily_timed_goal_completed_dict(self, habitObj):
-        return habitObj.day_total_timed_done 
-    
-    def get_daily_checked_goal_completed_dict(self, habitObj):
-        return habitObj.day_times_activity_done
-
 
     def create(self, validated_data):
         newHabit = Habit.objects.create(**validated_data)

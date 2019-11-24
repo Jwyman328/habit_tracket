@@ -3,7 +3,9 @@ from django.db import models
 from django.contrib.auth.models import User
 
 import datetime
+import time
 # Create your models here.
+
 
 class Habit(models.Model):
     start_date = models.DateField()
@@ -34,15 +36,84 @@ class Habit(models.Model):
             else:
                 self.completed = False
     
-        self.save()
+        
+
+    def create_all_daily_habits(self):
+        # for get a a date for every date in the range of start date to end date 
+        
+        #base = self.end_date - self.start_date
+        #print(self.start_date, self.end_date )
+        
+        datetime_start_date = datetime.datetime.strptime(self.start_date, '%Y-%m-%d') 
+        datetime_end_date = datetime.datetime.strptime(self.end_date, '%Y-%m-%d') 
+
+        difference_dates = datetime_end_date - datetime_start_date 
+        difference_dates += datetime.timedelta(days=1)
+        #print(base.days)
+        all_days = []
+        # fill all_days with each date from start_date to end_date 
+        while datetime_start_date <= datetime_end_date:
+            all_days.append(datetime_start_date)
+            datetime_start_date += datetime.timedelta(days=1)
+        
+        # for each date make a daily_habit_object
+        for date in all_days:
+            new_daily_habit = Daily_Habit.objects.create(habit=self, date=date)
+            new_daily_habit.save()
+
+
+
+
+
 
     def save(self, *args, **kwargs):
-        self.check_completed()
-        super(Habit,self).save( *args, **kwargs)
+        is_new = True if not self.id else False # https://stackoverflow.com/questions/28264653/how-create-new-object-automatically-after-creating-other-object-in-django
+
+        if is_new:
+            self.check_completed()
+            super(Habit,self).save( *args, **kwargs)
+            self.create_all_daily_habits()
+        else:
+            self.check_completed()
+            super(Habit,self).save( *args, **kwargs)
+
+
+class Daily_Habit(models.Model):
+    date = models.DateField(null=True, blank=True)
+    timed_total = models.DurationField(default = datetime.timedelta(0),null=True, blank=True)
+    count_times_done_total = models.PositiveIntegerField(default=0, null=True, blank=True)
+    habit = models.ForeignKey(Habit, on_delete = models.CASCADE,null=True, blank=True)
+    completed = models.BooleanField(default = False)
+
+    def check_completed(self):
+        if self.habit.type_of_habit == 'timed':
+            if float(self.habit.goal_amount) >= 1:
+                goal_amount_in_time_metric = datetime.timedelta(hours=float(self.habit.goal_amount))
+            else:
+                goal_amount_in_time_metric = datetime.timedelta(minutes=float(self.habit.goal_amount))
+            
+            if self.timed_total >= goal_amount_in_time_metric:
+                self.completed = True
+            else:
+                self.completed = False
+        
+        else:
+            if self.count_times_done_total >= float(self.habit.goal_amount):
+                self.completed = True
+            else:
+                self.completed = False
+
+    def save(self, *args, **kwargs):
+        if self.habit.type_of_goal == 'daily':
+            self.check_completed()
+        else:
+            pass
+        super(Daily_Habit,self).save( *args, **kwargs)
 
 
 class activity(models.Model):
     habit = models.ForeignKey(Habit, on_delete=models.CASCADE)
+    daily_habit = models.ForeignKey(Daily_Habit, on_delete=models.CASCADE,null=True, blank=True)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField(null=True, blank=True)
     total_time = models.DurationField(null=True, blank=True)
@@ -55,19 +126,42 @@ class activity(models.Model):
         else:
             pass
 
+    def add_data_to_daily_habit_date(self,date, count=False):
+        this_daily_habit = Daily_Habit.objects.filter(habit=self.habit).filter(date=date)
+        if  this_daily_habit:
+            this_daily_habit = this_daily_habit[0]
+
+                        # if it is a timed habit then add 
+            total_time = self.create_total_time()
+            if total_time:
+                this_daily_habit.timed_total += total_time
+
+            # dont count an activity to be done twice 
+            if count == True:
+                this_daily_habit.count_times_done_total += 1
+
+            
+            this_daily_habit.save()
+        else:
+            pass
+
+
+
     def save(self, *args, **kwargs):
         ## update the habits  current_completed_timed_amount or 
         ## current_times_activity_done
         ## always update times done 
         day = str(self.start_time.date())
+        
         is_new = True if not self.id else False # https://stackoverflow.com/questions/28264653/how-create-new-object-automatically-after-creating-other-object-in-django
         if is_new:
             self.habit.current_times_activity_done += 1
-
+            self.add_data_to_daily_habit_date(day, count=True)
             ## just get the day from datetime 
             #if habit is timed then add the total_time to the total_time completed
             self.habit.save()
         else:
+            self.add_data_to_daily_habit_date(day, count=False)
             if self.habit.type_of_habit == 'timed' and self.end_time:
                 # if its the first time activity for this habit then set timed_amount to this
                 self.create_total_time()

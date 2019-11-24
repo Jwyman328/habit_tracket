@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 
 
-from .models import Habit, activity
+from .models import Habit, activity, Daily_Habit
 from test_tools.test_tools import TestBase
 
 import datetime
@@ -21,7 +21,7 @@ class habit_test(TestBase):
     def test_habit_get_status(self):
         # first create a user obj before you create a  habit obj before you request data for it 
         newUser = self.create_user()
-        Habit.objects.create(start_date=datetime.date(2018,3,28), end_date=datetime.date(2018,3,28),
+        Habit.objects.create(start_date="2018-3-28", end_date="2018-3-28",
             type_of_habit='timed', title='test', goal_amount=5, completed=False, user=newUser)
 
         client = Client()
@@ -34,7 +34,7 @@ class habit_test(TestBase):
         client = Client()
         client.login(username='testtest', password='password')
         
-        response = client.post(reverse('create_habit'), data=json.dumps({'start_date':  datetime.date(2018,3,28), 'end_date':datetime.date(2018,3,28),
+        response = client.post(reverse('create_habit'), data=json.dumps({'start_date':  "2018-3-28", 'end_date':"2018-3-28",
             'type_of_habit':'timed', 'title':'test', 'goal_amount': 5, 'completed':False, 'user': newUser.username},cls= DjangoJSONEncoder),  content_type="application/json")
         self.assertEqual(response.status_code, 201)
 
@@ -43,7 +43,7 @@ class habit_test(TestBase):
         client = Client()
         client.login(username='testtest', password='password')
         
-        response = client.post(reverse('create_habit'), data=json.dumps({'start_date':  datetime.date(2018,3,28), 'end_date':datetime.date(2018,3,28),
+        response = client.post(reverse('create_habit'), data=json.dumps({'start_date':  "2018-3-28", 'end_date':"2018-3-28",
             'type_of_habit':'timed', 'title':'test', 'goal_amount': 5, 'completed':False, 'user': newUser.username},cls= DjangoJSONEncoder),  content_type="application/json")
 
         newHabit = Habit.objects.get(id=1)
@@ -75,18 +75,6 @@ class habit_test(TestBase):
         self.create_activity_pass_checked_habit()
         habit = Habit.objects.get(id=1)
         self.assertTrue(habit.completed)
-
-    def test_habit_complted_for_daily_true_status_200(self):
-        """self.create_activity_pass_checked_habit()
-
-        client = Client()
-        client.login(username='testtest', password='password')
-        client.get()"""
-
-
-
-
-
 
 
 class Test_activity(TestBase):
@@ -203,4 +191,10 @@ class Auth_test(TestBase):
         self.assertEqual(new_user_query_set[0].username, 'testtest')
 
 
+class Test_daily_habit(TestBase):
 
+    def test_daily_habit_create(self):
+        self.create_activity()
+        daily_habits = Daily_Habit.objects.all()
+        self.assertEqual(len(daily_habits), 1)
+        
