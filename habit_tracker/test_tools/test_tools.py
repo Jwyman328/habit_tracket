@@ -49,3 +49,10 @@ class TestBase(TestCase):
         newActivity = activity.objects.create(habit=newHabit, start_time = start_time, end_time=end_time, total_time=total_time)
         newActivity.save()
 
+    def create_daily_checked_habit(self):
+        newUser = self.create_user()
+        newHabit = Habit.objects.create(start_date="2018-3-28", end_date="2018-3-28",type_of_goal='daily',
+            type_of_habit='checked', title='test', goal_amount=2, completed=False, user=newUser)
+        newHabit.save()
+        return newHabit 
+

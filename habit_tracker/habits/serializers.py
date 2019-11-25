@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework_jwt.settings import api_settings
 
-from .models import Habit, activity
+from .models import Habit, activity, Daily_Habit
 
 from django.contrib.auth.models import User
 
@@ -56,4 +56,10 @@ class sign_up_serializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('token','username', 'password' )
+
+class Daily_habit_serializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Daily_Habit
+        fields = '__all__'
 

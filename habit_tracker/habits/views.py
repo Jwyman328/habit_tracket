@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
-from .models import Habit, activity
-from .serializers import Habit_serializer, activity_serializer, sign_up_serializer, regular_Habit_serializer
+from .models import Habit, activity, Daily_Habit
+from .serializers import Habit_serializer, activity_serializer, sign_up_serializer, regular_Habit_serializer, Daily_habit_serializer
 
 # Create your views here.
 from rest_framework.views import APIView
@@ -168,6 +168,23 @@ class sign_up_user(APIView):
             return Response(serialized_data.data,status.HTTP_201_CREATED)
         else:
             return Response('error', status.HTTP_400_BAD_REQUEST)
+
+
+#Daily habits
+class specific_daily_habit_data(APIView):
+
+    def get(self,request, id):
+        query = Daily_Habit.objects.get(id=1)
+        serialized_data = Daily_habit_serializer(query)
+        return Response(serialized_data.data, status.HTTP_200_OK )
+
+class daily_habits_by_date(APIView):
+
+    def get(self,request, year,month, day):
+        habit_day = datetime.date(year,month,day)
+        query = Daily_Habit.objects.filter(date=habit_day)
+        serialized_data = Daily_habit_serializer(query, many=True)
+        return Response(serialized_data.data, status.HTTP_200_OK )
 
 
 
