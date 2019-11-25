@@ -48,6 +48,18 @@ class individual_activity(APIView):
         serialized_data = activity_serializer(activity_query)
         return Response(serialized_data.data, status.HTTP_200_OK)
 
+class all_activities_for_date(APIView):
+
+    def get(self, request, year, month, day):
+        activity_date = datetime.date(year,month,day)
+        sctivity_date_over = datetime.date(year,month,day + 1)
+        user = request.user
+        all_activities_for_date = activity.objects.filter(habit__user=user).filter(start_time__gte = activity_date)
+        all_activities_for_habit  = all_activities_for_date.filter(start_time__lt = sctivity_date_over)
+        serialized_data = activity_serializer(all_activities_for_habit , many=True)
+        return Response(serialized_data.data, status.HTTP_200_OK)
+
+
 class create_activity(APIView):
 
     def post(self, request):
@@ -174,7 +186,7 @@ class sign_up_user(APIView):
 class specific_daily_habit_data(APIView):
 
     def get(self,request, id):
-        query = Daily_Habit.objects.get(id=1)
+        query = Daily_Habit.objects.get(id=id)
         serialized_data = Daily_habit_serializer(query)
         return Response(serialized_data.data, status.HTTP_200_OK )
 
