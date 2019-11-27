@@ -125,6 +125,16 @@ class activity(models.Model):
             return self.total_time
         else:
             pass
+    
+    #all checked habits will have an end time of 10 minutes after start time
+    def create_end_time(self):
+        print(self.start_time)
+        new_minutes = self.start_time.minute + 10
+        new_end_time = self.start_time.replace(minute = new_minutes )
+        
+        self.end_time = new_end_time
+        print(self.end_time)
+        
 
     def add_data_to_daily_habit_date(self,date, count=False):
         this_daily_habit = Daily_Habit.objects.filter(habit=self.habit).filter(date=date)
@@ -152,6 +162,12 @@ class activity(models.Model):
         ## current_times_activity_done
         ## always update times done 
         day = str(self.start_time.date())
+        ## add an end time to only checked habit activities
+        if self.habit.type_of_habit == 'checked':
+            self.create_end_time()
+            self.create_total_time()
+        else:
+            pass
         
         is_new = True if not self.id else False # https://stackoverflow.com/questions/28264653/how-create-new-object-automatically-after-creating-other-object-in-django
         if is_new:
