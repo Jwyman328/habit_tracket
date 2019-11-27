@@ -179,7 +179,14 @@ class Test_activity(TestBase):
         response = client.get(reverse('timed_activities_for_date', kwargs={ 'year': 2018,'month':3,'day':28}))
         self.assertEqual(response.status_code, 200)
 
-
+    def test_get_checked_activities_for_a_date_regardless_of_habit(self):     
+        self.create_activity_pass_checked_habit()
+        client = Client()
+        client.login(username='testtest', password='password')
+        
+        date = datetime.date(2018,11,18)
+        response = client.get(reverse('timed_activities_for_date', kwargs={ 'year': 2018,'month':3,'day':28}))
+        self.assertEqual(response.status_code, 200)
 
         
 class Auth_test(TestBase):

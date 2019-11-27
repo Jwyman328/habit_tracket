@@ -74,6 +74,18 @@ class timed_activities_for_date(APIView):
         serialized_data = activity_serializer(all_activities_for_habit , many=True)
         return Response(serialized_data.data, status.HTTP_200_OK)
 
+class checked_activities_for_date(APIView):
+     def get(self, request, year, month, day):
+        activity_date = datetime.date(year,month,day)
+        sctivity_date_over = datetime.date(year,month,day + 1)
+        user = request.user
+        all_activities_for_date = activity.objects.filter(habit__user=user).filter(habit__type_of_habit='checked').filter(start_time__gte = activity_date)
+        all_activities_for_habit  = all_activities_for_date.filter(start_time__lt = sctivity_date_over)
+        # sort them by start time 
+        all_activities_for_habit = all_activities_for_habit.order_by('-start_time')
+        serialized_data = activity_serializer(all_activities_for_habit , many=True)
+        return Response(serialized_data.data, status.HTTP_200_OK)
+
 class create_activity(APIView):
 
     def post(self, request):

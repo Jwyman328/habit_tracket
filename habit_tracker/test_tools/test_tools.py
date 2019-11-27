@@ -32,6 +32,7 @@ class TestBase(TestCase):
             type_of_habit='checked', title='test', goal_amount=1, completed=False, user=newUser)
 
         return newHabit
+
     
     def create_activity(self):
         newHabit = self.create_habit()
