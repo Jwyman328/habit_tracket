@@ -27,6 +27,12 @@ class Habit_serializer(serializers.ModelSerializer):
 
 class activity_serializer(serializers.ModelSerializer):
 
+    title = serializers.SerializerMethodField()
+
+    def get_title(self, obj):
+        title = obj.habit.title
+        return title
+
     class Meta:
         model = activity
         fields = '__all__'

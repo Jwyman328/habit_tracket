@@ -22,6 +22,7 @@ urlpatterns = [
     path('<int:habit_id>/<int:year>/<int:month>/<int:day>',views.habit_total_acumulated_for_specific_date.as_view(),name = 'habit_total_acumulated_for_specific_date'),
     path('<int:habit_id>/activities/<int:year>/<int:month>/<int:day>/', views.individual_habit_date_activity_view.as_view(), name='individual_habit_date_activity'),
     path('activities/<int:year>/<int:month>/<int:day>/', views.all_activities_for_date.as_view(), name='all_activities_for_date'),
+    path('activities/timed/<int:year>/<int:month>/<int:day>/', views.timed_activities_for_date.as_view(), name='timed_activities_for_date'),
     path('activities/update/<int:activity_id>/<int:year>/<int:month>/<int:day>/<int:hr>/<int:minute>/<int:sec>/', views.update_activity_end_time.as_view(), name='update_activity_end_time'),
     path('<int:id>/activities/', views.individual_habit_activity_list.as_view(), name='individual_habit_activity_list'),
     path('activity/<int:id>/', views.individual_activity.as_view(), name='individual_activity'),
