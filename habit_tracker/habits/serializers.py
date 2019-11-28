@@ -28,10 +28,15 @@ class Habit_serializer(serializers.ModelSerializer):
 class activity_serializer(serializers.ModelSerializer):
 
     title = serializers.SerializerMethodField()
-
+    type_of_habit = serializers.SerializerMethodField()
+    
     def get_title(self, obj):
         title = obj.habit.title
         return title
+
+    def get_type_of_habit(self,obj):
+        type_of_habit = obj.habit.type_of_habit
+        return type_of_habit
 
     class Meta:
         model = activity
