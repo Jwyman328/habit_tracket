@@ -52,7 +52,7 @@ class all_completed_activities_for_date(APIView):
     """return all completed activities for date  """
     def get(self, request, year, month, day):
         activity_date = datetime.date(year,month,day)
-        sctivity_date_over = datetime.date(year,month,day + 1)
+        sctivity_date_over = activity_date + datetime.timedelta(days=1)
         user = request.user
         all_activities_for_date = activity.objects.filter(habit__user=user).filter(start_time__gte = activity_date).filter(total_time__gt = datetime.timedelta(0,0,0))
         all_activities_for_habit  = all_activities_for_date.filter(start_time__lt = sctivity_date_over)

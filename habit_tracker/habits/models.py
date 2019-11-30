@@ -156,7 +156,6 @@ class activity(models.Model):
             pass
 
 
-
     def save(self, *args, **kwargs):
         ## update the habits  current_completed_timed_amount or 
         ## current_times_activity_done
