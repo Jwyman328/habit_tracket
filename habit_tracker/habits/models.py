@@ -129,8 +129,8 @@ class activity(models.Model):
     #all checked habits will have an end time of 10 minutes after start time
     def create_end_time(self):
         print(self.start_time)
-        new_minutes = self.start_time.minute + 10
-        new_end_time = self.start_time.replace(minute = new_minutes )
+        new_minutes = datetime.timedelta(minutes=10)
+        new_end_time = self.start_time + new_minutes
         
         self.end_time = new_end_time
         print(self.end_time)

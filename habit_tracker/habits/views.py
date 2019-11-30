@@ -123,7 +123,8 @@ class individual_habit_date_activity_view(APIView):
         date_wanted = datetime.datetime(year,month,day)
         ## get all activities for this habit that are on this day
         ## so not less than this day, or greaterthan or equal to a day after 
-        date_past = datetime.datetime(year,month,day + 1) 
+        dayIncrement = datetime.timedelta(days=1)
+        date_past = date_wanted + dayIncrement
         this_habit = Habit.objects.get(id=habit_id)
         all_activities_for_habit = activity.objects.filter(habit=this_habit).filter(start_time__gte = date_wanted)
         all_activities_for_habit  = all_activities_for_habit.filter(start_time__lt = date_past)
@@ -149,7 +150,8 @@ class habit_total_acumulated_for_specific_date(APIView):
         date_wanted = datetime.datetime(year,month,day)
         ## get all activities for this habit that are on this day
         ## so not less than this day, or greaterthan or equal to a day after 
-        date_past = datetime.datetime(year,month,day + 1) 
+        dayIncrement = datetime.timedelta(days=1)
+        date_past = date_wanted + dayIncrement
         this_habit = Habit.objects.get(id=habit_id)
         all_activities_for_habit = activity.objects.filter(habit=this_habit).filter(start_time__gte = date_wanted)
         all_activities_for_habit  = all_activities_for_habit.filter(start_time__lt = date_past)
