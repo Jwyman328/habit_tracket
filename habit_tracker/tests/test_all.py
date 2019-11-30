@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 
 
-from .models import Habit, activity, Daily_Habit
+from habits.models import Habit, activity, Daily_Habit
 from test_tools.test_tools import TestBase
 
 import datetime
@@ -218,6 +218,7 @@ class Auth_test(TestBase):
         self.assertEqual(new_user_query_set[0].username, 'testtest')
 
 
+
 class Test_daily_habit(TestBase):
 
     def test_daily_habit_create(self):
@@ -283,9 +284,6 @@ class Test_daily_habit(TestBase):
 
         response = client.get(reverse('daily_habits_by_date', kwargs={'year':'2019','month':'3','day':'28'}))
         self.assertEqual(response.status_code, 200)
-
-
-
 
 
 

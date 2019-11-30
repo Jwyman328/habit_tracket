@@ -15,8 +15,6 @@ class Habit_serializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         newHabit = Habit.objects.create(**validated_data)
-        for obj in validated_data:
-            print(obj)
         newHabit.save()
         return newHabit
     
