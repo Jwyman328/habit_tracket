@@ -1,23 +1,27 @@
+#django imports
 from django.shortcuts import render
+from django.utils import timezone
 
+#local imports
 from .models import Habit, activity, Daily_Habit
 from .serializers import Habit_serializer, activity_serializer, sign_up_serializer, regular_Habit_serializer, Daily_habit_serializer
 
-# Create your views here.
+# 3rd party package imports
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny
 
-from django.utils import timezone
+#python imports
 import pytz
 from pytz import timezone
-
 import datetime
 import json
 
+
 class individual_habit_view(APIView):
+    """Return Individual Habit Data."""
 
     def get(self, request, id):
         habit_id = id
@@ -26,6 +30,7 @@ class individual_habit_view(APIView):
         return Response(serialized_data.data, status.HTTP_200_OK )
 
 class create_habit(APIView):
+    """Create a Habit model."""
 
     def post(self, request):
         user = request.user
@@ -41,6 +46,7 @@ class create_habit(APIView):
             return Response('error', status.HTTP_400_BAD_REQUEST)
 
 class individual_activity(APIView):
+    """Return individual activity data."""
 
     def get(self, request, id):
         activity_id = id
@@ -49,7 +55,8 @@ class individual_activity(APIView):
         return Response(serialized_data.data, status.HTTP_200_OK)
 
 class all_completed_activities_for_date(APIView):
-    """return all completed activities for date  """
+    """Return all completed activities for specific date."""
+
     def get(self, request, year, month, day):
         activity_date = datetime.date(year,month,day)
         sctivity_date_over = activity_date + datetime.timedelta(days=1)
@@ -62,6 +69,7 @@ class all_completed_activities_for_date(APIView):
         return Response(serialized_data.data, status.HTTP_200_OK)
 
 class timed_activities_for_date(APIView):
+    """Return activities with a timed habit type_of_habit for specific date."""
 
     def get(self, request, year, month, day):
         activity_date = datetime.date(year,month,day)
@@ -75,6 +83,8 @@ class timed_activities_for_date(APIView):
         return Response(serialized_data.data, status.HTTP_200_OK)
 
 class checked_activities_for_date(APIView):
+    """Return activities with a checked habit type_of_habit for specific date."""
+
      def get(self, request, year, month, day):
         activity_date = datetime.date(year,month,day)
         sctivity_date_over = datetime.date(year,month,day + 1)
@@ -87,6 +97,7 @@ class checked_activities_for_date(APIView):
         return Response(serialized_data.data, status.HTTP_200_OK)
 
 class create_activity(APIView):
+    """Create an activity."""
 
     def post(self, request):
         # current format of data sent = {'habit_id':newHabit.id,'start_time': datetime.datetime.now(), 'end_time': datetime.datetime.now(), 'total_time':0}
@@ -108,6 +119,7 @@ class create_activity(APIView):
             return Response('error', status.HTTP_400_BAD_REQUEST)
 
 class individual_habit_activity_list(APIView):
+    """Return all activities for a specific Habit."""
 
     def get(self,request, id):
         habit_id = id
@@ -117,7 +129,8 @@ class individual_habit_activity_list(APIView):
         return Response(serialized_activities.data, status.HTTP_200_OK)
 
 class individual_habit_date_activity_view(APIView):
-    """return all activities for specified habit of specified date """
+    """Return all activities for specified habit of a specified date"""
+
     def get(self,request, habit_id, year, month, day):
         ## make a datetime date with year month day 
         date_wanted = datetime.datetime(year,month,day)
@@ -133,6 +146,7 @@ class individual_habit_date_activity_view(APIView):
         return Response(serialized_activities.data, status.HTTP_200_OK)
 
 class all_habits_for_specific_date(APIView):
+    """Return all habits that contain a specified date in their date range."""
 
     def get(self,request,year,month,day):
         # query just the users habits, then based off of date 
@@ -143,16 +157,17 @@ class all_habits_for_specific_date(APIView):
         return Response(serialized_data.data, status.HTTP_200_OK )
 
 class habit_total_acumulated_for_specific_date(APIView):
+    """Return data of a habit's accumulated time and accumulated count for a date."""
 
     def get(self, request, habit_id, year, month, day):
         # get habit, then query activities for this date 
-                ## make a datetime date with year month day 
+        ## make a datetime date with year month day 
         date_wanted = datetime.datetime(year,month,day)
         ## get all activities for this habit that are on this day
-        ## so not less than this day, or greaterthan or equal to a day after 
         dayIncrement = datetime.timedelta(days=1)
         date_past = date_wanted + dayIncrement
         this_habit = Habit.objects.get(id=habit_id)
+        ## not less than this day, or greaterthan or equal to a day after 
         all_activities_for_habit = activity.objects.filter(habit=this_habit).filter(start_time__gte = date_wanted)
         all_activities_for_habit  = all_activities_for_habit.filter(start_time__lt = date_past)
         ## now add up the total accumulated time and accumulated count 
@@ -169,16 +184,16 @@ class habit_total_acumulated_for_specific_date(APIView):
         accumulated_data['accumulated_time'] = str(accumulated_data['accumulated_time'] )
         jsonString = json.dumps(accumulated_data)
         jsonData = json.loads( jsonString)
-        return Response(jsonData,status.HTTP_200_OK )
+        return Response(jsonData, status.HTTP_200_OK )
 
 
 class update_activity_end_time(APIView):
+    """Update activity end time when timed activity is stopped."""
 
     def put(self,request,activity_id, year,month,day,hr,minute,sec):
 
         eastern = timezone('US/Eastern')
         end_time = datetime.datetime(year,month,day,hr,minute,sec)
-
         end_time = eastern.localize(end_time)
         this_activity = activity.objects.get(id=activity_id)
         this_activity.end_time = end_time
@@ -187,17 +202,13 @@ class update_activity_end_time(APIView):
         total_time = end_time  - this_activity.start_time 
         this_activity.total_time = total_time
         this_activity.save()
-        return Response('activity updated',status.HTTP_200_OK )
+        return Response('activity updated', status.HTTP_200_OK )
 
         
 class sign_up_user(APIView):
+    """Create a new user with passed username and password."""
 
-    # return the serialized data
-    # the view has allowAny ?
-    # only accept posts 
-    # validate the data 
-    # make a token and return it 
-
+    # allow anyone to access the ability to make a user
     permission_classes = [AllowAny]
 
     def post(self,request):
@@ -210,8 +221,8 @@ class sign_up_user(APIView):
             return Response('error', status.HTTP_400_BAD_REQUEST)
 
 
-#Daily habits
 class specific_daily_habit_data(APIView):
+    """Return specific daily_habit data."""
 
     def get(self,request, id):
         query = Daily_Habit.objects.get(id=id)
@@ -219,7 +230,8 @@ class specific_daily_habit_data(APIView):
         return Response(serialized_data.data, status.HTTP_200_OK )
 
 class daily_habits_by_date(APIView):
-
+    """Return all daily_habits for specified date."""
+    
     def get(self,request, year,month, day):
         habit_day = datetime.date(year,month,day)
         query = Daily_Habit.objects.filter(date=habit_day)
