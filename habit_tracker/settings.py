@@ -127,8 +127,6 @@ JWT_AUTH = {
     'JWT_VERIFY_EXPIRATION': False,
     'JWT_ALLOW_REFRESH': True,
 
-
-
 }
 
 CORS_ORIGIN_WHITELIST = [
