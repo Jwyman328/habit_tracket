@@ -81,16 +81,16 @@ WSGI_APPLICATION = 'habit_tracker.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    #'default': {
-        #'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': os.path.join(BASE_DIR, 'db3.sqlite3'),
-    #}
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-         'NAME': 'test',                      # Or path to database file if using sqlite3.
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db3.sqlite3'),
+    }
+    #"default": {
+        #"ENGINE": "django.db.backends.postgresql_psycopg2",
+         #'NAME': 'test',                      # Or path to database file if using sqlite3.
                   # Set to empty string for default. Not used with sqlite3.
      
-    }
+    #}
 }
 
 
