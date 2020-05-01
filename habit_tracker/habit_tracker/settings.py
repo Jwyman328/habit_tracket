@@ -130,7 +130,7 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:8000',
     'http://localhost:8080',
     'https://habit-tracker-app-frontend.herokuapp.com/',
-    'https://boring-kilby-cd9aae.netlify.app/'
+    'https://boring-kilby-cd9aae.netlify.app/',
 
 ]
 
